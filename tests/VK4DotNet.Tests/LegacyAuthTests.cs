@@ -21,6 +21,31 @@ public sealed class LegacyAuthTests
     }
 
     [Fact]
+    public void Diagnostic_strings_redact_password_codes_and_client_secret()
+    {
+        var options = new LegacyVkAuthOptions
+        {
+            ClientId = 123,
+            ClientSecret = "own-secret",
+            ClientName = "test",
+            UserAgent = "VK4DotNet.Test/1.1"
+        };
+        var request = new LegacyVkAuthRequest
+        {
+            Username = "user@example.test",
+            Password = "p@ssw0rd",
+            TwoFactorCode = "123456",
+            CaptchaKey = "captcha-answer"
+        };
+
+        Assert.DoesNotContain("own-secret", options.ToString(), StringComparison.Ordinal);
+        Assert.DoesNotContain("user@example.test", request.ToString(), StringComparison.Ordinal);
+        Assert.DoesNotContain("p@ssw0rd", request.ToString(), StringComparison.Ordinal);
+        Assert.DoesNotContain("123456", request.ToString(), StringComparison.Ordinal);
+        Assert.DoesNotContain("captcha-answer", request.ToString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task Captcha_is_returned_as_challenge()
     {
         var handler = new QueueHttpMessageHandler();

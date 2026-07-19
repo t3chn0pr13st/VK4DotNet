@@ -70,6 +70,31 @@ switch (args[0])
         }
         break;
 
+    case "legacy-browser":
+        using (var legacy = new LegacyVkBrowserAuthenticator(new LegacyVkBrowserAuthOptions
+        {
+            ClientId = long.Parse(RequireEnvironment("VK_CLIENT_ID")),
+            ClientSecret = RequireEnvironment("VK_CLIENT_SECRET"),
+            RedirectUri = new Uri(RequireEnvironment("VK_REDIRECT_URI")),
+            UserAgent = RequireEnvironment("VK_USER_AGENT")
+        }))
+        {
+            var session = legacy.CreateAuthorizationSession();
+            System.Console.WriteLine("Open this URL in a system browser:");
+            System.Console.WriteLine(session.AuthorizationUri);
+            System.Console.WriteLine("Paste the complete callback URI. It is handled in memory and is not printed:");
+            var callback = System.Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(callback))
+            {
+                throw new InvalidOperationException("A callback URI is required.");
+            }
+
+            var token = await legacy.CompleteAsync(new Uri(callback), session, cancellation.Token);
+            System.Console.WriteLine($"Authorized user {token.UserId}. Token intentionally not printed.");
+        }
+        break;
+
+    case "legacy-password":
     case "legacy":
         using (var legacy = new LegacyVkPasswordAuthenticator(new LegacyVkAuthOptions
         {
@@ -121,5 +146,6 @@ static void PrintUsage()
     System.Console.WriteLine("  chats");
     System.Console.WriteLine("  send-photo <peer-id> <path> [message]");
     System.Console.WriteLine("  post-photo <group-id|0-for-self> <path> [message]");
-    System.Console.WriteLine("  legacy");
+    System.Console.WriteLine("  legacy-browser");
+    System.Console.WriteLine("  legacy-password");
 }

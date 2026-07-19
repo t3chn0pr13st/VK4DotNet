@@ -2,24 +2,24 @@
 
 [Русская версия](README.ru.md)
 
-VK4DotNet is an asynchronous .NET 10 client for the VK API. Version 1.0 focuses on personal conversations, photo messages, and publishing photo posts to a user's own wall or a managed community.
+VK4DotNet is an asynchronous .NET 10 client for the VK API. Version 1.1 focuses on personal conversations, photo messages, photo posts, VK ID, and hosted legacy browser authorization.
 
 The API and model design are based on the GPL-licensed [VK4ME/client](https://github.com/VK4ME/client) and its J2VK library, updated for the official VK API 5.199 schema. VK4DotNet does not contain the embedded credentials, refresh token, or impersonated official-client User-Agent found in the historical J2ME code.
 
 > [!IMPORTANT]
-> The current official VK ID scope list does not include `messages`. Reading and sending personal messages therefore requires a compatible externally supplied user token or the explicitly opt-in `VK4DotNet.LegacyAuth` package. The legacy password flow is deprecated, may be unavailable for your application or account, and can stop working without notice.
+> The current official VK ID scope list does not include `messages`. Reading and sending personal messages therefore requires a compatible externally supplied user token or the explicitly opt-in `VK4DotNet.LegacyAuth` package. Legacy browser and password flows may be unavailable for your application or account and can stop working without notice. Requesting `messages` succeeds only for applications to which VK has granted that right.
 
 ## Packages
 
 - `VK4DotNet` — API client, immutable models, photo uploads, wall publishing, and VK ID OAuth 2.1 with PKCE.
-- `VK4DotNet.LegacyAuth` — isolated resource-owner password flow with CAPTCHA, 2FA, and SMS challenge results.
+- `VK4DotNet.LegacyAuth` — hosted legacy browser OAuth plus an isolated password fallback with CAPTCHA, 2FA, and SMS challenge results.
 
 Packages are attached to [GitHub Releases](https://github.com/t3chn0pr13st/VK4DotNet/releases), not published to NuGet.org. Download the `.nupkg` files, put them in a local package source, and install them:
 
 ```sh
 dotnet nuget add source /path/to/packages --name VK4DotNetLocal
-dotnet add package VK4DotNet --version 1.0.0
-dotnet add package VK4DotNet.LegacyAuth --version 1.0.0
+dotnet add package VK4DotNet --version 1.1.0
+dotnet add package VK4DotNet.LegacyAuth --version 1.1.0
 ```
 
 ## Use an existing token
@@ -94,14 +94,42 @@ await using var image = File.OpenRead("release.png");
 var result = await vk.Wall.PublishAsync(new VkPublishPostRequest
 {
     Target = VkWallTarget.Community(groupId: 123456, publishAsCommunity: true),
-    Message = "Version 1.0 is available",
+    Message = "Version 1.1 is available",
     Photos = [new VkUploadFile(image, "release.png", "image/png")]
 }, cancellationToken);
 ```
 
 Use `VkWallTarget.Self` for the current user's wall. Wall photo upload and `wall.post` require a user token even when the target is a managed community.
 
-## Legacy authorization
+## Hosted legacy browser authorization
+
+The browser authenticator is preferred over direct password authorization. VK owns every phone, confirmation-code, password, CAPTCHA, passkey, and consent screen; the library sees only the final OAuth callback. The consuming application must open the URL and capture its registered redirect URI.
+
+```csharp
+using VK4DotNet.LegacyAuth;
+
+using var legacy = new LegacyVkBrowserAuthenticator(new LegacyVkBrowserAuthOptions
+{
+    ClientId = yourOwnApplicationId,
+    ClientSecret = yourOwnApplicationSecret,
+    RedirectUri = new Uri("https://example.test/vk/legacy-callback"),
+    UserAgent = "YourApplication/1.0"
+});
+
+var session = legacy.CreateAuthorizationSession();
+// Open session.AuthorizationUri in the system browser. Keep the session only
+// for this attempt, then pass the complete callback URI back to the library.
+var token = await legacy.CompleteAsync(callbackUri, session, cancellationToken);
+using var vk = new VkClient(token.Value);
+```
+
+`AuthorizationCode` is the default and keeps the access token out of the callback URI. It requires the secret belonging to your own VK application. Legacy native applications that cannot use code exchange may explicitly select `LegacyVkBrowserFlow.AccessToken`; in that mode the token is returned in the URI fragment, which an HTTP callback server cannot receive. The host must capture the complete fragment locally and must never log it.
+
+Both modes generate and validate a cryptographically random `state`, verify the callback location, and request `messages,photos,wall,groups,offline` by default. Browser authorization does not bypass VK's application-level restriction on the `messages` scope.
+
+## Direct legacy password fallback
+
+Direct password authorization is retained only as a compatibility fallback. It exposes the account password to the consuming process and is not designed for every modern multi-step VK login path. Prefer `LegacyVkBrowserAuthenticator` whenever the application can receive a browser callback.
 
 ```csharp
 using VK4DotNet.LegacyAuth;

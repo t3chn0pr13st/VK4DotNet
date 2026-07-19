@@ -3,7 +3,7 @@
     <AssemblyName>VK4DotNet</AssemblyName>
     <RootNamespace>VK4DotNet</RootNamespace>
     <PackageId>VK4DotNet</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>VK4DotNet contributors</Authors>
     <Description>Asynchronous .NET 10 client for VK messages, photos, wall publishing, and VK ID.</Description>
     <PackageTags>vk;vkontakte;api;messages;oauth;vk-id</PackageTags>

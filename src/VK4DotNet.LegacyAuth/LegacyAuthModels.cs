@@ -27,6 +27,9 @@ public sealed record LegacyVkAuthOptions
             throw new VkValidationException("At least one valid legacy scope is required.");
         }
     }
+
+    public override string ToString() =>
+        $"{nameof(LegacyVkAuthOptions)} {{ ClientId = {ClientId}, ClientSecret = <redacted>, ClientName = {ClientName}, UserAgent = {UserAgent} }}";
 }
 
 public sealed record LegacyVkAuthRequest
@@ -37,6 +40,9 @@ public sealed record LegacyVkAuthRequest
     public string? CaptchaSid { get; init; }
     public string? CaptchaKey { get; init; }
     public bool ForceSms { get; init; }
+
+    public override string ToString() =>
+        $"{nameof(LegacyVkAuthRequest)} {{ Username = <redacted>, Password = <redacted>, TwoFactorCode = <redacted>, CaptchaSid = {CaptchaSid}, CaptchaKey = <redacted>, ForceSms = {ForceSms} }}";
 }
 
 public enum LegacyVkChallengeKind

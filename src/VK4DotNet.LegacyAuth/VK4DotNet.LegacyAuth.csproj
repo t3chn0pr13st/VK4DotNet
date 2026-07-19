@@ -3,10 +3,10 @@
     <AssemblyName>VK4DotNet.LegacyAuth</AssemblyName>
     <RootNamespace>VK4DotNet.LegacyAuth</RootNamespace>
     <PackageId>VK4DotNet.LegacyAuth</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>VK4DotNet contributors</Authors>
-    <Description>Explicit opt-in legacy password authorization for VK4DotNet.</Description>
-    <PackageTags>vk;vkontakte;oauth;legacy;password</PackageTags>
+    <Description>Explicit opt-in hosted browser and password fallback authorization for VK4DotNet.</Description>
+    <PackageTags>vk;vkontakte;oauth;legacy;browser;password</PackageTags>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/t3chn0pr13st/VK4DotNet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/t3chn0pr13st/VK4DotNet.git</RepositoryUrl>
