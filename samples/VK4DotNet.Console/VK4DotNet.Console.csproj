@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/VK4DotNet/VK4DotNet.csproj" />
+    <ProjectReference Include="../../src/VK4DotNet.LegacyAuth/VK4DotNet.LegacyAuth.csproj" />
+  </ItemGroup>
+</Project>

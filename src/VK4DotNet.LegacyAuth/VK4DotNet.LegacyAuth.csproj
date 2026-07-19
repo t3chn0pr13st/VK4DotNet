@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>VK4DotNet.LegacyAuth</AssemblyName>
+    <RootNamespace>VK4DotNet.LegacyAuth</RootNamespace>
+    <PackageId>VK4DotNet.LegacyAuth</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>VK4DotNet contributors</Authors>
+    <Description>Explicit opt-in legacy password authorization for VK4DotNet.</Description>
+    <PackageTags>vk;vkontakte;oauth;legacy;password</PackageTags>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/t3chn0pr13st/VK4DotNet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/t3chn0pr13st/VK4DotNet.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../VK4DotNet/VK4DotNet.csproj" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+    <None Include="../../THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="/" />
+    <None Include="../../licenses/J2VK-LGPL-2.1.txt" Pack="true" PackagePath="licenses/" />
+  </ItemGroup>
+</Project>

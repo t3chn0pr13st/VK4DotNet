@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/VK4DotNet/VK4DotNet.csproj" />
+    <Project Path="src/VK4DotNet.LegacyAuth/VK4DotNet.LegacyAuth.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/VK4DotNet.Tests/VK4DotNet.Tests.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/VK4DotNet.Console/VK4DotNet.Console.csproj" />
+  </Folder>
+</Solution>

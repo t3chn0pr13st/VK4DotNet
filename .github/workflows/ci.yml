@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "codex/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-pack:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet restore VK4DotNet.slnx
+      - run: dotnet build VK4DotNet.slnx -c Release --no-restore
+      - run: dotnet test VK4DotNet.slnx -c Release --no-build --logger trx --results-directory TestResults
+      - run: dotnet pack VK4DotNet.slnx -c Release --no-build -o artifacts/packages
+      - name: Smoke-test packages
+        shell: pwsh
+        run: |
+          $smoke = Join-Path $env:RUNNER_TEMP "vk4dotnet-smoke"
+          dotnet new console -n Smoke -o $smoke --framework net10.0
+          dotnet add "$smoke/Smoke.csproj" package VK4DotNet --version 1.0.0 --source "$PWD/artifacts/packages"
+          dotnet add "$smoke/Smoke.csproj" package VK4DotNet.LegacyAuth --version 1.0.0 --source "$PWD/artifacts/packages"
+          Set-Content "$smoke/Program.cs" 'using VK4DotNet; using VK4DotNet.LegacyAuth; using var vk = new VkClient("token"); Console.WriteLine(typeof(LegacyVkPasswordAuthenticator).FullName);'
+          dotnet build "$smoke/Smoke.csproj" -c Release
+      - uses: actions/upload-artifact@v4
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          name: packages
+          path: artifacts/packages/*.*nupkg
