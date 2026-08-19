@@ -187,3 +187,20 @@ Set `VK4DOTNET_LIVE_USER_TOKEN` to opt into the live read-only integration test.
 ## License
 
 VK4DotNet is licensed under **GPL-3.0-only**. Applications that distribute or convey a combined work using this library must comply with the GPL, including corresponding-source obligations. See [LICENSE](LICENSE) and [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+
+## Выпуск пакета — локально, не через CI
+
+**GitHub Actions у аккаунта не выполняются: биллинг выключен и включать его не планируется.**
+Workflow здесь падает, не начав работу, поэтому пакет собирается и выпускается с машины
+разработчика:
+
+```bash
+dotnet test VK4DotNet.slnx -c Release
+dotnet pack VK4DotNet.slnx -c Release -o artifacts/packages -p:Version=X.Y.Z
+gh release create vX.Y.Z artifacts/packages/*.nupkg --generate-notes
+```
+
+Packages are attached to GitHub Releases, so a release is the delivery: consumers download the
+`.nupkg` and add it to a local package source. `dotnet pack` is not deterministic — repacking the
+same version yields a different SHA-256 — so publish exactly the file you built, and never repack
+a version that someone already pinned.
